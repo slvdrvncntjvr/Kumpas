@@ -105,6 +105,14 @@ const en: Dict = {
   "camera.confLow": "low",
   "camera.confMedium": "medium",
   "camera.confHigh": "high",
+  "camera.loadingModel": "Loading sign recognition model…",
+  "camera.modelError": "Could not load the sign recognition model.",
+  "camera.waitingForSign": "Show a sign to the camera…",
+  "camera.detecting": "Detecting…",
+  "camera.noHand": "No hand detected",
+  "camera.handDetected": "Hand detected",
+  "camera.useMock": "Use demo mode",
+  "camera.useReal": "Use real recognition",
 
   // Settings
   "settings.title": "Settings",
@@ -232,6 +240,14 @@ const fil: Dict = {
   "camera.confLow": "mababa",
   "camera.confMedium": "katamtaman",
   "camera.confHigh": "mataas",
+  "camera.loadingModel": "Naglo-load ng sign recognition model…",
+  "camera.modelError": "Hindi ma-load ang sign recognition model.",
+  "camera.waitingForSign": "Magpakita ng senyas sa kamera…",
+  "camera.detecting": "Tinutukoy…",
+  "camera.noHand": "Walang natukoy na kamay",
+  "camera.handDetected": "May natukoy na kamay",
+  "camera.useMock": "Gamitin ang demo mode",
+  "camera.useReal": "Gamitin ang totoong pagkilala",
 
   // Settings
   "settings.title": "Mga Setting",

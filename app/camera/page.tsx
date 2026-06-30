@@ -3,85 +3,92 @@
 import { useEffect, useRef, useState } from "react";
 import { CameraPreview } from "@/components/CameraPreview";
 import { SpeakButton } from "@/components/SpeakButton";
-import { predictMock } from "@/ml/mockPredictor";
 import { formatConfidence, confidenceLevel } from "@/utils/confidence";
 import type { Prediction } from "@/types/prediction";
 import { useLanguage } from "@/i18n/LanguageProvider";
+import { useSignRecognition } from "@/ml/useSignRecognition";
 
 /**
- * Camera recognition demo.
+ * Camera recognition demo — real-time sign recognition.
  *
- * MVP uses `predictMock`. The integration points for the real pipeline are:
- *   - mediapipeHands.ts: extract hand landmarks from each video frame
- *   - tfjsPredictor.ts:  run the TF.js model on a landmark sequence
- * Replace the mock interval below with that pipeline when ready.
+ * Pipeline: getUserMedia video → MediaPipe Hands (live landmark overlay) →
+ * 128-D landmark features sampled across a 2s window → TF.js model
+ * (converted from the Keras training pipeline) → stabilized phrase.
  */
 export default function CameraPage() {
   const { language, t } = useLanguage();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const overlayRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const intervalRef = useRef<number | null>(null);
-  // Keep the active language available to the interval callback without
-  // re-creating the camera stream when it changes.
-  const languageRef = useRef(language);
-  useEffect(() => {
-    languageRef.current = language;
-  }, [language]);
 
   const [active, setActive] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [prediction, setPrediction] = useState<Prediction | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+
+  const { status, prediction, live, handDetected, error, prepare, start, stop } =
+    useSignRecognition({ language });
+
+  // Preload the model + MediaPipe on mount so the first Start is responsive.
+  useEffect(() => {
+    void prepare();
+  }, [prepare]);
 
   const stopCamera = () => {
-    if (intervalRef.current) {
-      window.clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
+    stop();
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     setActive(false);
   };
 
-  // Clean up the camera when leaving the page.
-  useEffect(() => stopCamera, []);
+  useEffect(() => stopCamera, []); // cleanup on unmount
 
   const startCamera = async () => {
-    setError(null);
+    setCameraError(null);
     if (
       typeof navigator === "undefined" ||
       !navigator.mediaDevices?.getUserMedia
     ) {
-      setError(t("camera.notAvailable"));
+      setCameraError(t("camera.notAvailable"));
       return;
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
+        video: { facingMode: "user", width: 640, height: 480 },
         audio: false,
       });
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
+        setActive(true);
+        void start(videoRef.current, overlayRef.current);
       }
-      setActive(true);
-
-      // Mock predictions on a timer. Real pipeline replaces this block.
-      intervalRef.current = window.setInterval(() => {
-        setPrediction(predictMock(languageRef.current));
-      }, 2000);
-      setPrediction(predictMock(languageRef.current));
     } catch {
-      setError(t("camera.denied"));
+      setCameraError(t("camera.denied"));
     }
   };
 
-  const confLabel = (value: number) =>
-    t(
-      `camera.conf${confidenceLevel(value).charAt(0).toUpperCase()}${confidenceLevel(
-        value,
-      ).slice(1)}`,
-    );
+  const confLabel = (value: number) => {
+    const level = confidenceLevel(value);
+    return t(`camera.conf${level.charAt(0).toUpperCase()}${level.slice(1)}`);
+  };
+
+  const isLoadingModel = status === "loading";
+  const modelFailed = status === "error";
+
+  // Live status badge over the video.
+  const badge = (() => {
+    if (!handDetected) {
+      return <LiveBadge tone="muted">{t("camera.noHand")}</LiveBadge>;
+    }
+    if (live) {
+      return (
+        <LiveBadge tone="active">
+          {t("camera.detecting")} {live.label} · {formatConfidence(live.confidence)}
+        </LiveBadge>
+      );
+    }
+    return <LiveBadge tone="active">{t("camera.detecting")}</LiveBadge>;
+  })();
 
   return (
     <div className="flex flex-col gap-6">
@@ -94,10 +101,24 @@ export default function CameraPage() {
         </p>
       </header>
 
+      {isLoadingModel && (
+        <p className="rounded-button bg-surface-alt px-4 py-3 text-sm font-semibold text-text-muted">
+          {t("camera.loadingModel")}
+        </p>
+      )}
+      {modelFailed && (
+        <p className="rounded-button bg-danger/10 px-4 py-3 text-sm font-semibold text-danger">
+          {t("camera.modelError")}
+          {error ? ` (${error})` : ""}
+        </p>
+      )}
+
       <CameraPreview
         ref={videoRef}
+        overlayRef={overlayRef}
         active={active}
-        error={error ?? (active ? null : t("camera.cameraOff"))}
+        error={cameraError ?? (active ? null : t("camera.cameraOff"))}
+        badge={active ? badge : undefined}
       />
 
       <div className="flex gap-3">
@@ -105,7 +126,8 @@ export default function CameraPage() {
           <button
             type="button"
             onClick={startCamera}
-            className="flex min-h-12 flex-1 items-center justify-center rounded-button bg-bee-yellow px-6 text-lg font-black text-bee-black transition-colors hover:bg-bee-yellow-bright"
+            disabled={isLoadingModel}
+            className="flex min-h-12 flex-1 items-center justify-center rounded-button bg-bee-yellow px-6 text-lg font-black text-bee-black transition-colors hover:bg-bee-yellow-bright disabled:opacity-60"
           >
             {t("camera.start")}
           </button>
@@ -120,43 +142,105 @@ export default function CameraPage() {
         )}
       </div>
 
-      {prediction && active && (
+      {active && (
         <div
           aria-live="polite"
           className="flex flex-col gap-4 rounded-card border border-border bg-surface p-5 shadow-[var(--shadow)]"
         >
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
-              {t("camera.detectedSign")}
+          {prediction ? (
+            <PredictionView
+              prediction={prediction}
+              confLabel={confLabel}
+              confidenceLabel={t("camera.confidence")}
+              detectedLabel={t("camera.detectedSign")}
+              outputLabel={t("camera.outputPhrase")}
+              speakLabel={t("camera.speakOutput")}
+            />
+          ) : (
+            <p className="py-4 text-center font-semibold text-text-muted">
+              {t("camera.waitingForSign")}
             </p>
-            <p className="text-2xl font-black">{prediction.label}</p>
-          </div>
-
-          <div>
-            <div className="mb-1 flex items-center justify-between text-sm font-bold">
-              <span>
-                {t("camera.confidence")} ({confLabel(prediction.confidence)})
-              </span>
-              <span>{formatConfidence(prediction.confidence)}</span>
-            </div>
-            <div className="h-3 overflow-hidden rounded-pill bg-surface-alt">
-              <div
-                className="h-full rounded-pill bg-bee-yellow transition-[width]"
-                style={{ width: formatConfidence(prediction.confidence) }}
-              />
-            </div>
-          </div>
-
-          <div className="rounded-button bg-surface-alt p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
-              {t("camera.outputPhrase")}
-            </p>
-            <p className="mt-1 text-xl font-bold">{prediction.phrase}</p>
-          </div>
-
-          <SpeakButton text={prediction.phrase} label={t("camera.speakOutput")} />
+          )}
         </div>
       )}
     </div>
+  );
+}
+
+function LiveBadge({
+  tone,
+  children,
+}: {
+  tone: "muted" | "active";
+  children: React.ReactNode;
+}) {
+  return (
+    <span
+      className={`inline-flex items-center gap-2 rounded-pill px-3 py-1.5 text-sm font-bold shadow-[var(--shadow)] ${
+        tone === "active"
+          ? "bg-bee-yellow text-bee-black"
+          : "bg-bee-black/80 text-white"
+      }`}
+    >
+      {tone === "active" && (
+        <span className="h-2 w-2 animate-pulse rounded-full bg-bee-black" />
+      )}
+      {children}
+    </span>
+  );
+}
+
+function PredictionView({
+  prediction,
+  confLabel,
+  confidenceLabel,
+  detectedLabel,
+  outputLabel,
+  speakLabel,
+}: {
+  prediction: Prediction;
+  confLabel: (v: number) => string;
+  confidenceLabel: string;
+  detectedLabel: string;
+  outputLabel: string;
+  speakLabel: string;
+}) {
+  return (
+    <>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
+          {detectedLabel}
+        </p>
+        <p className="text-2xl font-black">{prediction.label}</p>
+      </div>
+
+      <div>
+        <div className="mb-1 flex items-center justify-between text-sm font-bold">
+          <span>
+            {confidenceLabel} ({confLabel(prediction.confidence)})
+          </span>
+          <span>{formatConfidence(prediction.confidence)}</span>
+        </div>
+        <div className="h-3 overflow-hidden rounded-pill bg-surface-alt">
+          <div
+            className="h-full rounded-pill bg-bee-yellow transition-[width]"
+            style={{ width: formatConfidence(prediction.confidence) }}
+          />
+        </div>
+      </div>
+
+      {prediction.phrase && (
+        <div className="rounded-button bg-surface-alt p-4">
+          <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
+            {outputLabel}
+          </p>
+          <p className="mt-1 text-xl font-bold">{prediction.phrase}</p>
+        </div>
+      )}
+
+      {prediction.phrase && (
+        <SpeakButton text={prediction.phrase} label={speakLabel} />
+      )}
+    </>
   );
 }
