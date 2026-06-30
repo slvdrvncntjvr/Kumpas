@@ -65,16 +65,19 @@ def main() -> int:
         average="macro",
         zero_division=0,
     )
+    has_no_sign = "NO_SIGN" in config["labels"]
     provisional = True
     metric_gate = bool(macro_f1 >= 0.75 and per_class_recall.min() >= 0.60)
-    has_no_sign = "NO_SIGN" in config["labels"]
+    blocking_reasons = [
+        "Signer/session grouping has not been verified from authoritative metadata."
+    ]
+    if not has_no_sign:
+        blocking_reasons.append("NO_SIGN training and test data are absent.")
+    warning = " ".join(blocking_reasons)
     metrics = {
         "provisional": provisional,
-        "warning": "Filename stems are unverified signer/session proxies and NO_SIGN is absent.",
-        "blocking_reasons": [
-            "Signer/session grouping has not been verified from authoritative metadata.",
-            "NO_SIGN training and test data are absent.",
-        ],
+        "warning": warning,
+        "blocking_reasons": blocking_reasons,
         "sample_count": int(len(y_test)),
         "accuracy": float(accuracy_score(y_test, predictions)),
         "macro_f1": float(macro_f1),

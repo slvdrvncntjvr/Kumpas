@@ -1,5 +1,5 @@
 {
-  "version": "baseline-v3",
+  "version": "baseline-v5",
   "random_seed": 42,
   "paths": {
     "labels_csv": "labels.csv",
@@ -7,8 +7,8 @@
     "test_csv": "test.csv",
     "video_base": "clips",
     "hand_landmarker_model": "models/hand_landmarker.task",
-    "cache_dir": "cache/baseline-v3",
-    "artifact_dir": "artifacts/baseline-v3"
+    "cache_dir": "cache/baseline-v5",
+    "artifact_dir": "artifacts/baseline-v5"
   },
   "labels": [
     "YES",
@@ -16,8 +16,15 @@
     "DEAF",
     "THANK YOU",
     "SLOW",
-    "DON’T UNDERSTAND",
-    "MARRIAGE LICENSE"
+    "DON\u2019T UNDERSTAND",
+    "MARRIAGE LICENSE",
+    "BARANGAY CLEARANCE",
+    "CERTIFICATE OF INDIGENCY",
+    "CERTIFICATE OF RESIDENCY",
+    "CEDULA",
+    "BLOTTER REPORT",
+    "AYUDA",
+    "NO_SIGN"
   ],
   "sequence_length": 40,
   "feature_count": 128,
@@ -48,5 +55,16 @@
     "height": 360,
     "confidence_threshold": 0.8,
     "minimum_hand_coverage": 0.25
+  },
+  "auto_capture": {
+    "start_motion_threshold": 0.035,
+    "stop_motion_threshold": 0.012,
+    "start_frames": 3,
+    "end_hold_seconds": 0.7,
+    "minimum_sign_seconds": 0.8,
+    "maximum_sign_seconds": 8.0,
+    "pre_roll_seconds": 0.15,
+    "post_roll_seconds": 0.15,
+    "motion_smoothing": 0.4
   }
 }

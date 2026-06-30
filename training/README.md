@@ -3,9 +3,11 @@
 This folder contains the offline phrase-video dataset and the reproducible
 training pipeline for the first Kumpas recognition baseline.
 
-The baseline labels are `YES`, `NO`, `DEAF`, `THANK YOU`, `SLOW`, and
-`DON’T UNDERSTAND`. It is not suitable for continuous camera inference until a
-representative `NO_SIGN` class is collected and included.
+The staged accuracy and latency roadmap is in `IMPROVEMENT_PLAN.md`.
+
+The current baseline-v5 model contains 13 isolated phrase classes plus
+`NO_SIGN`. It supports repeated isolated-phrase webcam testing, but it is not
+yet a continuous sentence translator.
 
 ## Environment
 
@@ -28,11 +30,12 @@ The raw training data is too large for Git (~520 MB). Git only tracks small
 
 | Path | Contents | Size |
 |------|----------|------|
-| `clips/` | 2,130 phrase `.MOV` videos | ~372 MB |
+| `clips/` | 2,310 phrase videos | ~1.03 GB |
 | `archive/` | 11,700 alphabet images (future use) | ~134 MB |
 | `models/` | MediaPipe `hand_landmarker.task` | ~8 MB |
 
-Generated outputs (`cache/`, `artifacts/`) stay local and are not in DVC.
+Generated outputs (`cache/`, `artifacts/`) are ignored by Git. Pipeline outputs
+are versioned by DVC through `dvc.lock` and uploaded with `dvc push`.
 
 ### One-time setup
 
@@ -111,10 +114,10 @@ To start a new model version, update all three version fields in `config.json`:
 
 ```json
 {
-  "version": "baseline-v4",
+  "version": "baseline-v5",
   "paths": {
-    "cache_dir": "cache/baseline-v4",
-    "artifact_dir": "artifacts/baseline-v4"
+    "cache_dir": "cache/baseline-v5",
+    "artifact_dir": "artifacts/baseline-v5"
   }
 }
 ```
@@ -125,16 +128,17 @@ DVC remote and commit only the small version metadata:
 ```powershell
 python -m dvc push
 git add dvc.yaml dvc.lock training/config.json
-git commit -m "train baseline-v4"
-git tag model-baseline-v4
+git commit -m "train baseline-v5"
+git tag model-baseline-v5
 git push --follow-tags
 ```
 
 Use a unique version name for every retained experiment. Do not reuse an old
 version path with different labels or parameters.
 
-Generated landmark arrays are written to `cache/baseline-v2/`. Models,
-reports, metrics, and plots are written to `artifacts/baseline-v2/`.
+Generated landmark arrays are written to the versioned `cache_dir` in
+`config.json`. Models, reports, metrics, and plots are written to its versioned
+`artifact_dir`.
 
 Baseline v2 uses wrist-relative, palm-scaled hand geometry. One-hand signs
 always occupy the first feature slot, preventing camera mirroring from moving
@@ -153,9 +157,10 @@ until that assumption is verified from authoritative dataset metadata.
 
 ## Webcam test
 
-The webcam tester performs one prediction only after a manual four-second
-capture. It does not run continuous recognition because the model has no
-`NO_SIGN` class.
+The webcam tester supports manual fixed-window capture and experimental
+motion-based automatic capture. Baseline-v5 includes a trained `NO_SIGN` class,
+so repeated isolated-phrase recognition can suppress some background motion.
+It is not yet a continuous sentence translator.
 
 Check model loading and camera access first:
 
@@ -173,3 +178,61 @@ Start the interactive tester:
 Press Space, perform one sign for the full capture, then wait for the label and
 confidence. Press `Q` or Escape to quit. If camera index `0` is unavailable,
 try `--camera 1`.
+
+### Automatic capture
+
+Automatic mode waits for hand motion, records until the hands remain stable,
+then resamples only the detected sign interval to 40 frames:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\webcam_test.py --auto
+```
+
+The live motion score and start threshold are displayed in the window. Tune
+the values under `auto_capture` in `config.json` if capture starts too easily
+or fails to start. Press `R` to reset the detector.
+
+Automatic segmentation reduces the fixed-window timing mismatch. Baseline-v5
+includes initial `NO_SIGN` data, but live false-activation testing is still
+required before relying on it.
+
+### Live benchmark
+
+Pass the phrase being performed with `--expected`. Each prediction is appended
+to `artifacts/<version>/live/webcam_trials.csv` with confidence, effective sign
+duration, acceptance status, and end-to-result latency:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\webcam_test.py --auto --expected CEDULA
+.\.venv\Scripts\python.exe scripts\webcam_test.py --auto --expected AYUDA
+```
+
+Collect at least 20 trials per phrase and repeat with multiple signers. Generate
+the live metrics and confusion matrix with:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\summarize_webcam_trials.py
+```
+
+Do not use the order-sensitive model change as the next experiment until this
+benchmark identifies the actual live confusion and latency bottlenecks.
+
+## Collecting more webcam data
+
+Record additional signer, speed, lighting, and background variation with:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\collect_webcam_clips.py cedula --count 20
+```
+
+Collect `NO_SIGN` clips separately. Include idle hands, hands entering/leaving
+the frame, transitions, partial signs, and unrelated gestures:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\collect_webcam_clips.py no_sign --count 100
+```
+
+Review the recordings before adding metadata. When the batch is accepted,
+version the clip directory with `python -m dvc add training/clips` from the
+repository root. Real signer IDs must be added to the metadata before claiming
+signer-independent evaluation; filename stems remain only a provisional proxy.

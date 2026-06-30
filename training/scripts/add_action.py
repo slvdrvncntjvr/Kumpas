@@ -9,6 +9,11 @@ def main():
     parser = argparse.ArgumentParser(description="Add a new action to the pipeline")
     parser.add_argument("folder_name", help="Name of the folder in clips/clips/ (e.g. marriage_license)")
     parser.add_argument("--category", default="UNCATEGORIZED", help="Category for labels.csv")
+    parser.add_argument(
+        "--skip-pipeline",
+        action="store_true",
+        help="Update metadata without running DVC; useful when adding a batch",
+    )
     args = parser.parse_args()
 
     root_dir = Path(__file__).resolve().parents[1]
@@ -23,7 +28,11 @@ def main():
         print(f"Error: No videos found in {clips_dir}")
         sys.exit(1)
 
-    label_name = args.folder_name.replace("_", " ").upper()
+    label_name = (
+        "NO_SIGN"
+        if args.folder_name.lower() == "no_sign"
+        else args.folder_name.replace("_", " ").upper()
+    )
     print(f"Adding {len(videos)} videos for action: {label_name} (Folder: {args.folder_name})")
 
     # 1. Update labels.csv
@@ -79,6 +88,10 @@ def main():
     if new_entries == 0 and existing_label and label_name in config.get("labels", []):
         print("No new changes to commit. Everything is up to date!")
         # We can still run the pipeline if the user wants, but maybe we skip or just run.
+
+    if args.skip_pipeline:
+        print("Skipped DVC pipeline run.")
+        return
 
     # 4. Version the clips and run the repository-level DVC pipeline.
     print("\n--- Running Pipeline ---")

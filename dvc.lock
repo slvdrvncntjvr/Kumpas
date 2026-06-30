@@ -5,13 +5,13 @@ stages:
     deps:
     - path: training/clips
       hash: md5
-      md5: cbdd0909f89853998dd292b563f000da.dir
-      size: 462791309
-      nfiles: 2150
+      md5: c178630963801bd152c50a24454687d5.dir
+      size: 1044560433
+      nfiles: 2330
     - path: training/labels.csv
       hash: md5
-      md5: 70a46f41a1416523c0fc479c41eaae31
-      size: 2049
+      md5: 3fb07ec5fe530a2cc4a32e1ca45b17c7
+      size: 2253
     - path: training/scripts/validate_dataset.py
       hash: md5
       md5: 4ce3696c33d84f887e0b10563546e6cd
@@ -22,8 +22,8 @@ stages:
       size: 14755
     - path: training/train.csv
       hash: md5
-      md5: ea1cf7523d578a97f63457b413640363
-      size: 60042
+      md5: d1c2e7b570709c79e067060b5b9dbf4f
+      size: 67979
     params:
       training/config.json:
         labels:
@@ -34,22 +34,29 @@ stages:
         - SLOW
         - DON’T UNDERSTAND
         - MARRIAGE LICENSE
+        - BARANGAY CLEARANCE
+        - CERTIFICATE OF INDIGENCY
+        - CERTIFICATE OF RESIDENCY
+        - CEDULA
+        - BLOTTER REPORT
+        - AYUDA
+        - NO_SIGN
         paths.labels_csv: labels.csv
         paths.test_csv: test.csv
         paths.train_csv: train.csv
         paths.video_base: clips
     outs:
-    - path: training/artifacts/baseline-v3/dataset_report.json
+    - path: training/artifacts/baseline-v5/dataset_report.json
       hash: md5
-      md5: 471b58e4ba36dbcea3e151a3312e13b8
-      size: 1674
+      md5: e9e780af203f21dea4fa8b45f4fc5de0
+      size: 2041
   build_splits:
     cmd: '".\training\.venv\Scripts\python.exe" training\scripts\build_splits.py'
     deps:
-    - path: training/artifacts/baseline-v3/dataset_report.json
+    - path: training/artifacts/baseline-v5/dataset_report.json
       hash: md5
-      md5: 471b58e4ba36dbcea3e151a3312e13b8
-      size: 1674
+      md5: e9e780af203f21dea4fa8b45f4fc5de0
+      size: 2041
     - path: training/scripts/build_splits.py
       hash: md5
       md5: e543448f640528a6014cb2e50d297373
@@ -60,8 +67,8 @@ stages:
       size: 14755
     - path: training/train.csv
       hash: md5
-      md5: ea1cf7523d578a97f63457b413640363
-      size: 60042
+      md5: d1c2e7b570709c79e067060b5b9dbf4f
+      size: 67979
     params:
       training/config.json:
         labels:
@@ -72,6 +79,13 @@ stages:
         - SLOW
         - DON’T UNDERSTAND
         - MARRIAGE LICENSE
+        - BARANGAY CLEARANCE
+        - CERTIFICATE OF INDIGENCY
+        - CERTIFICATE OF RESIDENCY
+        - CEDULA
+        - BLOTTER REPORT
+        - AYUDA
+        - NO_SIGN
         paths.test_csv: test.csv
         paths.train_csv: train.csv
         paths.video_base: clips
@@ -81,28 +95,28 @@ stages:
           validation: 0.15
           test: 0.15
     outs:
-    - path: training/artifacts/baseline-v3/split_report.json
+    - path: training/artifacts/baseline-v5/split_report.json
       hash: md5
-      md5: 38d0b4d5f225646425faf6183aac6bcd
-      size: 1143
-    - path: training/artifacts/baseline-v3/splits
+      md5: 7cad272b717f1b546414733c881f325f
+      size: 1738
+    - path: training/artifacts/baseline-v5/splits
       hash: md5
-      md5: ae3af003eddf9530a01bc7ac2f7f9998.dir
-      size: 6442
+      md5: bdcd43439dde70f665c56050aca10235.dir
+      size: 14936
       nfiles: 3
   extract_landmarks:
     cmd: '".\training\.venv\Scripts\python.exe" training\scripts\extract_landmarks.py'
     deps:
-    - path: training/artifacts/baseline-v3/splits
+    - path: training/artifacts/baseline-v5/splits
       hash: md5
-      md5: ae3af003eddf9530a01bc7ac2f7f9998.dir
-      size: 6442
+      md5: bdcd43439dde70f665c56050aca10235.dir
+      size: 14936
       nfiles: 3
     - path: training/clips
       hash: md5
-      md5: cbdd0909f89853998dd292b563f000da.dir
-      size: 462791309
-      nfiles: 2150
+      md5: c178630963801bd152c50a24454687d5.dir
+      size: 1044560433
+      nfiles: 2330
     - path: training/models/hand_landmarker.task
       hash: md5
       md5: 15318430ea3851670fe9914116a9cfad
@@ -127,29 +141,36 @@ stages:
         - SLOW
         - DON’T UNDERSTAND
         - MARRIAGE LICENSE
+        - BARANGAY CLEARANCE
+        - CERTIFICATE OF INDIGENCY
+        - CERTIFICATE OF RESIDENCY
+        - CEDULA
+        - BLOTTER REPORT
+        - AYUDA
+        - NO_SIGN
         paths.hand_landmarker_model: models/hand_landmarker.task
         sequence_length: 40
         temporal_crop:
           start_ratio: 0.15
           end_ratio: 0.85
-        version: baseline-v3
+        version: baseline-v5
     outs:
-    - path: training/cache/baseline-v3
+    - path: training/cache/baseline-v5
       hash: md5
-      md5: 6fa4122db1f3828875fd8bb28b95e576.dir
-      size: 887824
+      md5: ad0a71efef6ec4c5f114e46d4ffc894f.dir
+      size: 2032486
       nfiles: 7
   train_model:
     cmd: '".\training\.venv\Scripts\python.exe" training\scripts\train_model.py'
     deps:
-    - path: training/cache/baseline-v3/train.npz
+    - path: training/cache/baseline-v5/train.npz
       hash: md5
-      md5: fdd25d89bc50a780c57948854c5aba2f
-      size: 608408
-    - path: training/cache/baseline-v3/validation.npz
+      md5: 45ffda7e5f8d78484b92db4d5c95928d
+      size: 1416993
+    - path: training/cache/baseline-v5/validation.npz
       hash: md5
-      md5: 7bf0dbcf8d3770308304b968572fe52e
-      size: 120676
+      md5: 086860fbcd2357472cdd4f3c807b2179
+      size: 269322
     - path: training/scripts/train_model.py
       hash: md5
       md5: c9c8dad3ebe6189fc0414ad6b90d7eaa
@@ -165,6 +186,13 @@ stages:
         - SLOW
         - DON’T UNDERSTAND
         - MARRIAGE LICENSE
+        - BARANGAY CLEARANCE
+        - CERTIFICATE OF INDIGENCY
+        - CERTIFICATE OF RESIDENCY
+        - CEDULA
+        - BLOTTER REPORT
+        - AYUDA
+        - NO_SIGN
         random_seed: 42
         sequence_length: 40
         training:
@@ -172,28 +200,28 @@ stages:
           batch_size: 16
           learning_rate: 0.001
           early_stopping_patience: 15
-        version: baseline-v3
+        version: baseline-v5
     outs:
-    - path: training/artifacts/baseline-v3/model
+    - path: training/artifacts/baseline-v5/model
       hash: md5
-      md5: 27f5ee7de719a91f3c43b761cfe47820.dir
-      size: 1732698
+      md5: 5ffe714446f57e82034b7247c7a9353d.dir
+      size: 1740670
       nfiles: 5
   evaluate_model:
     cmd: '".\training\.venv\Scripts\python.exe" training\scripts\evaluate_model.py'
     deps:
-    - path: training/artifacts/baseline-v3/model/best.keras
+    - path: training/artifacts/baseline-v5/model/best.keras
       hash: md5
-      md5: 65c9f67639f906b982648c542c59c29e
-      size: 860659
-    - path: training/cache/baseline-v3/test.npz
+      md5: 78920f5eff0a4c3b648e08d0a3c7bdc2
+      size: 866121
+    - path: training/cache/baseline-v5/test.npz
       hash: md5
-      md5: bf853317cdaf257bc8019fe19db023fe
-      size: 140100
+      md5: a479cdfb848d5cb8177488449b265ea9
+      size: 308199
     - path: training/scripts/evaluate_model.py
       hash: md5
-      md5: b8360b30135fea69f0fb303fa23170fe
-      size: 3635
+      md5: c4cb175aa46641ffadce139544daddae
+      size: 3681
     params:
       training/config.json:
         labels:
@@ -204,16 +232,23 @@ stages:
         - SLOW
         - DON’T UNDERSTAND
         - MARRIAGE LICENSE
+        - BARANGAY CLEARANCE
+        - CERTIFICATE OF INDIGENCY
+        - CERTIFICATE OF RESIDENCY
+        - CEDULA
+        - BLOTTER REPORT
+        - AYUDA
+        - NO_SIGN
     outs:
-    - path: training/artifacts/baseline-v3/evaluation/confusion_matrix.png
+    - path: training/artifacts/baseline-v5/evaluation/confusion_matrix.png
       hash: md5
-      md5: cde900e5e7043f362aaa5210c47c53cf
-      size: 76624
-    - path: training/artifacts/baseline-v3/evaluation/metrics.json
+      md5: 1668f789fff2092ed17df3f4db07d841
+      size: 176140
+    - path: training/artifacts/baseline-v5/evaluation/metrics.json
       hash: md5
-      md5: dbc7fd21a5365e15622666a64b0f3876
-      size: 1578
-    - path: training/artifacts/baseline-v3/evaluation/predictions.npz
+      md5: 0cf57105878fb5df8686f6458f2fa851
+      size: 2408
+    - path: training/artifacts/baseline-v5/evaluation/predictions.npz
       hash: md5
-      md5: 1cc80e68d9f1a2927db4bb707f53c2a5
-      size: 1241
+      md5: d38b72371a08251bb14efcf6c1c19b86
+      size: 2698
