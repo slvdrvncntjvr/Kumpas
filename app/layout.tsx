@@ -7,6 +7,7 @@ import { AppGate } from "@/components/AppGate";
 import { AppHeader } from "@/components/AppHeader";
 import { BottomNav } from "@/components/BottomNav";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { DevServiceWorkerCleanup } from "@/components/DevServiceWorkerCleanup";
 
 export const metadata: Metadata = {
   title: "Kumpas — FSL Communicator",
@@ -35,6 +36,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        {process.env.NODE_ENV === "development" ? (
+          <DevServiceWorkerCleanup />
+        ) : null}
         <ThemeProvider>
           <FontSizeProvider>
             <LanguageProvider>

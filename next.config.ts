@@ -54,10 +54,10 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   reactStrictMode: true,
-  // The webpack filesystem cache fails to snapshot deps on some Node 23 setups,
-  // which can stall static generation. Disable it for a reliable build.
-  webpack: (config) => {
-    config.cache = false;
+  // The webpack filesystem cache can stall static generation on some Node
+  // versions. Keep the development cache enabled for fast rebuilds.
+  webpack: (config, { dev }) => {
+    if (!dev) config.cache = false;
     return config;
   },
 };
