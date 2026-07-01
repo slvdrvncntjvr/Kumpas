@@ -29,7 +29,7 @@ no internet required for essential communication.
 
 ## Team
 
-- Ajose, Justin Gabriel
+- A Jose, Justin Gabriel
 - Baes, Franz Emmanuel
 - Delos Santos, Christian Joseph
 - Javier, Salvador Vincent 
