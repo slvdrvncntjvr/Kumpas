@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -21,8 +22,12 @@ def normalized_video_path(video_base: str, csv_path: str) -> str:
     return (Path(video_base) / relative).as_posix()
 
 
-def contains_every_label(frame: pd.DataFrame, labels: list[str]) -> bool:
-    return set(frame["label"]) == set(labels)
+def content_hash(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def main() -> int:
@@ -38,45 +43,67 @@ def main() -> int:
     selected["video_path"] = selected["vid_path"].map(
         lambda value: normalized_video_path(paths["video_base"], value)
     )
-    selected["group_id"] = selected["vid_path"].map(
-        lambda value: Path(value.replace("\\", "/")).stem
+    selected["content_hash"] = selected["video_path"].map(
+        lambda value: content_hash(ROOT / value)
     )
     label_to_index = {label: index for index, label in enumerate(labels)}
     selected["class_index"] = selected["label"].map(label_to_index)
+    source_row_count = len(selected)
+    selected = selected.drop_duplicates(["label", "content_hash"]).copy()
+    selected["group_id"] = selected.apply(
+        lambda row: f"{row['class_index']}:{row['content_hash']}", axis=1
+    )
 
-    groups = sorted(selected["group_id"].unique(), key=lambda value: int(value))
     ratios = config["split_ratios"]
-    validation_count = max(1, round(len(groups) * ratios["validation"]))
-    test_count = max(1, round(len(groups) * ratios["test"]))
     rng = np.random.default_rng(config["random_seed"])
+    split_parts: dict[str, list[pd.DataFrame]] = {
+        "train": [],
+        "validation": [],
+        "test": [],
+    }
+    split_groups: dict[str, list[str]] = {
+        "train": [],
+        "validation": [],
+        "test": [],
+    }
 
-    split_frames: dict[str, pd.DataFrame] | None = None
-    split_groups: dict[str, list[str]] | None = None
-    for _ in range(10_000):
-        shuffled = np.array(groups, dtype=str)
+    for label in labels:
+        label_rows = selected[selected["label"] == label]
+        groups = label_rows["group_id"].to_numpy(dtype=str)
+        if len(groups) < 3:
+            print(f"{label} has fewer than three unique video contents.")
+            return 1
+
+        shuffled = groups.copy()
         rng.shuffle(shuffled)
+        validation_count = max(1, round(len(groups) * ratios["validation"]))
+        test_count = max(1, round(len(groups) * ratios["test"]))
+        while validation_count + test_count >= len(groups):
+            if test_count >= validation_count and test_count > 1:
+                test_count -= 1
+            elif validation_count > 1:
+                validation_count -= 1
+            else:
+                break
+
         test_groups = shuffled[:test_count].tolist()
         validation_groups = shuffled[test_count : test_count + validation_count].tolist()
         train_groups = shuffled[test_count + validation_count :].tolist()
-        candidates = {
-            "train": selected[selected["group_id"].isin(train_groups)].copy(),
-            "validation": selected[
-                selected["group_id"].isin(validation_groups)
-            ].copy(),
-            "test": selected[selected["group_id"].isin(test_groups)].copy(),
-        }
-        if all(contains_every_label(frame, labels) for frame in candidates.values()):
-            split_frames = candidates
-            split_groups = {
-                "train": sorted(train_groups, key=int),
-                "validation": sorted(validation_groups, key=int),
-                "test": sorted(test_groups, key=int),
-            }
-            break
 
-    if split_frames is None or split_groups is None:
-        print("Could not create group-exclusive splits containing every class.")
-        return 1
+        for split_name, assigned_groups in (
+            ("train", train_groups),
+            ("validation", validation_groups),
+            ("test", test_groups),
+        ):
+            split_groups[split_name].extend(assigned_groups)
+            split_parts[split_name].append(
+                label_rows[label_rows["group_id"].isin(assigned_groups)].copy()
+            )
+
+    split_frames = {
+        name: pd.concat(parts, ignore_index=True)
+        for name, parts in split_parts.items()
+    }
 
     artifact_dir = ROOT / paths["artifact_dir"]
     split_dir = artifact_dir / "splits"
@@ -100,8 +127,13 @@ def main() -> int:
     )
     report = {
         "provisional": True,
-        "group_assumption": "The video filename stem is treated as a signer/session proxy.",
+        "group_assumption": (
+            "Exact duplicate video contents are collapsed and split exclusively. "
+            "Signer identity remains unavailable."
+        ),
         "group_overlap": group_overlap,
+        "duplicate_rows_removed": int(source_row_count - len(selected)),
+        "unique_video_contents": int(len(selected)),
         "groups": split_groups,
         "rows": {name: int(len(frame)) for name, frame in split_frames.items()},
         "class_counts": {

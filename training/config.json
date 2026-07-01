@@ -1,5 +1,5 @@
 {
-  "version": "baseline-v5",
+  "version": "baseline-v6",
   "random_seed": 42,
   "paths": {
     "labels_csv": "labels.csv",
@@ -7,8 +7,8 @@
     "test_csv": "test.csv",
     "video_base": "clips",
     "hand_landmarker_model": "models/hand_landmarker.task",
-    "cache_dir": "cache/baseline-v5",
-    "artifact_dir": "artifacts/baseline-v5"
+    "cache_dir": "cache/baseline-v6",
+    "artifact_dir": "artifacts/baseline-v6"
   },
   "labels": [
     "YES",
@@ -24,6 +24,8 @@
     "CEDULA",
     "BLOTTER REPORT",
     "AYUDA",
+    "DRIVERS LICENSE",
+    "LAND DEED",
     "NO_SIGN"
   ],
   "sequence_length": 40,

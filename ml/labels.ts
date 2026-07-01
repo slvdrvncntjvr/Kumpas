@@ -44,6 +44,14 @@ export const labelToPhrase: Record<string, Record<Language, string>> = {
     en: "I am asking for assistance (ayuda).",
     fil: "Humihingi ako ng ayuda.",
   },
+  "DRIVERS LICENSE": {
+    en: "I need a driver's license.",
+    fil: "Kailangan ko ng driver's license.",
+  },
+  "LAND DEED": {
+    en: "I need a land deed.",
+    fil: "Kailangan ko ng land deed.",
+  },
   NO_SIGN: { en: "", fil: "" },
 };
 

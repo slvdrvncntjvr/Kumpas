@@ -11,7 +11,7 @@ import { FEATURE_COUNT } from "./mediapipeHands";
  *
  * Inference contract (must match training):
  *   input  : [1, sequenceLength, 128] float32
- *   output : [14] softmax probabilities
+ *   output : [number of labels] softmax probabilities
  */
 
 const MODEL_URL = "/models/sign-model/model.json";

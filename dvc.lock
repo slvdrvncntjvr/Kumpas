@@ -5,13 +5,13 @@ stages:
     deps:
     - path: training/clips
       hash: md5
-      md5: c178630963801bd152c50a24454687d5.dir
-      size: 1044560433
-      nfiles: 2330
+      md5: 039958b0abbb79cd726153afa0ca11a9.dir
+      size: 2347235642
+      nfiles: 2531
     - path: training/labels.csv
       hash: md5
-      md5: 3fb07ec5fe530a2cc4a32e1ca45b17c7
-      size: 2253
+      md5: 3c56ff30924e59bd41335a3a85ce0c30
+      size: 2309
     - path: training/scripts/validate_dataset.py
       hash: md5
       md5: 4ce3696c33d84f887e0b10563546e6cd
@@ -22,8 +22,8 @@ stages:
       size: 14755
     - path: training/train.csv
       hash: md5
-      md5: d1c2e7b570709c79e067060b5b9dbf4f
-      size: 67979
+      md5: a6db7cdef3d28d30aacbc0bf1e1f949d
+      size: 80540
     params:
       training/config.json:
         labels:
@@ -40,35 +40,37 @@ stages:
         - CEDULA
         - BLOTTER REPORT
         - AYUDA
+        - DRIVERS LICENSE
+        - LAND DEED
         - NO_SIGN
         paths.labels_csv: labels.csv
         paths.test_csv: test.csv
         paths.train_csv: train.csv
         paths.video_base: clips
     outs:
-    - path: training/artifacts/baseline-v5/dataset_report.json
+    - path: training/artifacts/baseline-v6/dataset_report.json
       hash: md5
-      md5: e9e780af203f21dea4fa8b45f4fc5de0
-      size: 2041
+      md5: 51d24d593e5a1a32be8f4e6f7948c229
+      size: 2156
   build_splits:
     cmd: '".\training\.venv\Scripts\python.exe" training\scripts\build_splits.py'
     deps:
-    - path: training/artifacts/baseline-v5/dataset_report.json
+    - path: training/artifacts/baseline-v6/dataset_report.json
       hash: md5
-      md5: e9e780af203f21dea4fa8b45f4fc5de0
-      size: 2041
+      md5: 51d24d593e5a1a32be8f4e6f7948c229
+      size: 2156
     - path: training/scripts/build_splits.py
       hash: md5
-      md5: e543448f640528a6014cb2e50d297373
-      size: 4549
+      md5: e45ccc0d98d313ba7da82feca00c3767
+      size: 5353
     - path: training/test.csv
       hash: md5
       md5: 7268285eb314cce19ccac02bb977228d
       size: 14755
     - path: training/train.csv
       hash: md5
-      md5: d1c2e7b570709c79e067060b5b9dbf4f
-      size: 67979
+      md5: a6db7cdef3d28d30aacbc0bf1e1f949d
+      size: 80540
     params:
       training/config.json:
         labels:
@@ -85,6 +87,8 @@ stages:
         - CEDULA
         - BLOTTER REPORT
         - AYUDA
+        - DRIVERS LICENSE
+        - LAND DEED
         - NO_SIGN
         paths.test_csv: test.csv
         paths.train_csv: train.csv
@@ -95,28 +99,28 @@ stages:
           validation: 0.15
           test: 0.15
     outs:
-    - path: training/artifacts/baseline-v5/split_report.json
+    - path: training/artifacts/baseline-v6/split_report.json
       hash: md5
-      md5: 7cad272b717f1b546414733c881f325f
-      size: 1738
-    - path: training/artifacts/baseline-v5/splits
+      md5: 08145c171265d5e2c52096bfbf49fb37
+      size: 16799
+    - path: training/artifacts/baseline-v6/splits
       hash: md5
-      md5: bdcd43439dde70f665c56050aca10235.dir
-      size: 14936
+      md5: 00a4b37c75d0cfbea668db9d6f5d21a2.dir
+      size: 21833
       nfiles: 3
   extract_landmarks:
     cmd: '".\training\.venv\Scripts\python.exe" training\scripts\extract_landmarks.py'
     deps:
-    - path: training/artifacts/baseline-v5/splits
+    - path: training/artifacts/baseline-v6/splits
       hash: md5
-      md5: bdcd43439dde70f665c56050aca10235.dir
-      size: 14936
+      md5: 00a4b37c75d0cfbea668db9d6f5d21a2.dir
+      size: 21833
       nfiles: 3
     - path: training/clips
       hash: md5
-      md5: c178630963801bd152c50a24454687d5.dir
-      size: 1044560433
-      nfiles: 2330
+      md5: 039958b0abbb79cd726153afa0ca11a9.dir
+      size: 2347235642
+      nfiles: 2531
     - path: training/models/hand_landmarker.task
       hash: md5
       md5: 15318430ea3851670fe9914116a9cfad
@@ -147,30 +151,32 @@ stages:
         - CEDULA
         - BLOTTER REPORT
         - AYUDA
+        - DRIVERS LICENSE
+        - LAND DEED
         - NO_SIGN
         paths.hand_landmarker_model: models/hand_landmarker.task
         sequence_length: 40
         temporal_crop:
           start_ratio: 0.15
           end_ratio: 0.85
-        version: baseline-v5
+        version: baseline-v6
     outs:
-    - path: training/cache/baseline-v5
+    - path: training/cache/baseline-v6
       hash: md5
-      md5: ad0a71efef6ec4c5f114e46d4ffc894f.dir
-      size: 2032486
+      md5: 1d337d382f59105fc65429f9449a21b9.dir
+      size: 1252704
       nfiles: 7
   train_model:
     cmd: '".\training\.venv\Scripts\python.exe" training\scripts\train_model.py'
     deps:
-    - path: training/cache/baseline-v5/train.npz
+    - path: training/cache/baseline-v6/train.npz
       hash: md5
-      md5: 45ffda7e5f8d78484b92db4d5c95928d
-      size: 1416993
-    - path: training/cache/baseline-v5/validation.npz
+      md5: df32b96fa6470e5658b9ebcd6a0a83a3
+      size: 830684
+    - path: training/cache/baseline-v6/validation.npz
       hash: md5
-      md5: 086860fbcd2357472cdd4f3c807b2179
-      size: 269322
+      md5: ba6bb92932249dd2a2345f484beeac6b
+      size: 200267
     - path: training/scripts/train_model.py
       hash: md5
       md5: c9c8dad3ebe6189fc0414ad6b90d7eaa
@@ -192,6 +198,8 @@ stages:
         - CEDULA
         - BLOTTER REPORT
         - AYUDA
+        - DRIVERS LICENSE
+        - LAND DEED
         - NO_SIGN
         random_seed: 42
         sequence_length: 40
@@ -200,24 +208,24 @@ stages:
           batch_size: 16
           learning_rate: 0.001
           early_stopping_patience: 15
-        version: baseline-v5
+        version: baseline-v6
     outs:
-    - path: training/artifacts/baseline-v5/model
+    - path: training/artifacts/baseline-v6/model
       hash: md5
-      md5: 5ffe714446f57e82034b7247c7a9353d.dir
-      size: 1740670
+      md5: 16fc90fd546ff00202ba7f855ffc79ae.dir
+      size: 1746638
       nfiles: 5
   evaluate_model:
     cmd: '".\training\.venv\Scripts\python.exe" training\scripts\evaluate_model.py'
     deps:
-    - path: training/artifacts/baseline-v5/model/best.keras
+    - path: training/artifacts/baseline-v6/model/best.keras
       hash: md5
-      md5: 78920f5eff0a4c3b648e08d0a3c7bdc2
-      size: 866121
-    - path: training/cache/baseline-v5/test.npz
+      md5: e8a8544ffdc72695d4df3b11560056cd
+      size: 867681
+    - path: training/cache/baseline-v6/test.npz
       hash: md5
-      md5: a479cdfb848d5cb8177488449b265ea9
-      size: 308199
+      md5: 94e0d5acce37f9f2a6206c56423053be
+      size: 196878
     - path: training/scripts/evaluate_model.py
       hash: md5
       md5: c4cb175aa46641ffadce139544daddae
@@ -238,17 +246,19 @@ stages:
         - CEDULA
         - BLOTTER REPORT
         - AYUDA
+        - DRIVERS LICENSE
+        - LAND DEED
         - NO_SIGN
     outs:
-    - path: training/artifacts/baseline-v5/evaluation/confusion_matrix.png
+    - path: training/artifacts/baseline-v6/evaluation/confusion_matrix.png
       hash: md5
-      md5: 1668f789fff2092ed17df3f4db07d841
-      size: 176140
-    - path: training/artifacts/baseline-v5/evaluation/metrics.json
+      md5: 183e4d02f1456e4a7986a99b0c9b0e4c
+      size: 204618
+    - path: training/artifacts/baseline-v6/evaluation/metrics.json
       hash: md5
-      md5: 0cf57105878fb5df8686f6458f2fa851
-      size: 2408
-    - path: training/artifacts/baseline-v5/evaluation/predictions.npz
+      md5: b5dd43bd3b40e46b5fcd4bb89378c715
+      size: 2853
+    - path: training/artifacts/baseline-v6/evaluation/predictions.npz
       hash: md5
-      md5: d38b72371a08251bb14efcf6c1c19b86
-      size: 2698
+      md5: 5617ab9216be3bb0a2ddfed64d23bc52
+      size: 2496
