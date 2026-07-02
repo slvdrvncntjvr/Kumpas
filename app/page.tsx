@@ -51,7 +51,7 @@ export default function HomePage() {
             className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-[0.12em] text-text-muted"
           >
             <Clock aria-hidden="true" className="h-4 w-4" />
-            Recently used
+            {t("home.recentlyUsed")}
           </h2>
           <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 pb-2 sm:-mx-8 sm:px-8">
             {recents.map((phrase) => (

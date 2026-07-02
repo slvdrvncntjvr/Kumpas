@@ -71,6 +71,7 @@ const en: Dict = {
   "home.title": "Essential communication, within reach.",
   "home.emergency": "Emergency",
   "home.phraseCategories": "Phrase categories",
+  "home.recentlyUsed": "Recently used",
   "home.moreTools": "More tools",
   "home.hearingMode": "Hearing person mode",
   "home.cameraDemo": "FSL Camera",
@@ -192,11 +193,11 @@ const fil: Dict = {
   "common.loading": "Naglo-load…",
 
   // Navigation
-  "nav.home": "Home",
+  "nav.home": "Umpisa",
   "nav.library": "Aklatan",
-  "nav.emergency": "Help",
-  "nav.hearing": "Pang-nakaririnig",
-  "nav.camera": "Kumpas Mode",
+  "nav.emergency": "Tulong",
+  "nav.hearing": "Pang-nakakarinig",
+  "nav.camera": "Camera",
 
   // Status
   "status.online": "Online",
@@ -238,8 +239,9 @@ const fil: Dict = {
   // Home
   "home.eyebrow": "Offline-first na FSL communicator",
   "home.title": "Mahalagang komunikasyon, abot-kamay.",
-  "home.emergency": "Help",
+  "home.emergency": "Tulong",
   "home.phraseCategories": "Mga kategorya ng parirala",
+  "home.recentlyUsed": "Kakagamit Lang",
   "home.moreTools": "Iba pang kagamitan",
   "home.hearingMode": "Pang-nakaririnig",
   "home.cameraDemo": "FSL Camera",
@@ -274,7 +276,7 @@ const fil: Dict = {
   "hearing.suggested": "Mga iminumungkahing parirala",
 
   // Emergency
-  "emergency.title": "Help",
+  "emergency.title": "Tulong",
   "emergency.message":
     "Bingi ako. Kailangan ko ng tulong. Pakitawagan ang aking emergency contact.",
   "emergency.speakMessage": "Sabihin ang mensahe ng emerhensiya",
