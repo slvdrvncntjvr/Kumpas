@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { loadProfile, saveProfile } from "@/services/storageService";
 import { EmergencyProfileCard } from "@/components/EmergencyProfileCard";
 import { SpeakButton } from "@/components/SpeakButton";
+import { PhFlag } from "@/components/PhFlag";
+import { Check } from "lucide-react";
+import { toNationalDigits, isValidNationalNumber, formatNationalInput } from "@/utils/phone";
 import type { UserProfile } from "@/types/userProfile";
 import { useLanguage } from "@/i18n/LanguageProvider";
 
@@ -139,13 +142,13 @@ export default function EmergencyPage() {
               setDraft({ ...draft, emergencyContactName: value })
             }
           />
-          <Field
+          <ContactField
             label={t("emergency.contactNumber")}
-            type="tel"
             value={draft.emergencyContactNumber}
             onChange={(value) =>
               setDraft({ ...draft, emergencyContactNumber: value })
             }
+            t={t}
           />
           <Field
             label={t("emergency.medicalNote")}
@@ -201,6 +204,72 @@ function Field({
         onChange={(event) => onChange(event.target.value)}
         className="min-h-12 rounded-button border border-border bg-surface px-4 text-lg shadow-[var(--shadow)]"
       />
+    </label>
+  );
+}
+
+function ContactField({
+  label,
+  value,
+  onChange,
+  t,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  t: (k: string) => string;
+}) {
+  const contact = toNationalDigits(value);
+  const complete = contact.length === 10;
+  const validNumber = isValidNationalNumber(contact);
+  const showError = complete && !validNumber;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+    const number = isValidNationalNumber(digits) ? `+63${digits}` : digits;
+    onChange(number);
+  };
+
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="font-bold">{label}</span>
+      <div
+        className={`flex min-h-12 items-center gap-2 rounded-button border bg-surface pl-3 pr-4 shadow-[var(--shadow)] focus-within:outline focus-within:outline-[3px] focus-within:outline-offset-2 focus-within:outline-bee-yellow-bright ${
+          showError
+            ? "border-danger"
+            : validNumber
+              ? "border-success"
+              : "border-border"
+        }`}
+      >
+        <span className="flex shrink-0 items-center gap-1.5 border-r border-border pr-2 font-bold">
+          <PhFlag className="h-4 w-6 rounded-[2px]" />
+          +63
+        </span>
+        <input
+          type="tel"
+          inputMode="numeric"
+          value={formatNationalInput(contact)}
+          onChange={handleChange}
+          autoComplete="tel-national"
+          placeholder="9XX XXX XXXX"
+          aria-invalid={showError}
+          style={{ outline: "none", boxShadow: "none" }}
+          className="min-w-0 flex-1 border-0 bg-transparent px-5 py-2 text-lg tracking-wide"
+        />
+      </div>
+      <span className="min-h-5 text-sm font-semibold">
+        {validNumber ? (
+          <span className="flex items-center gap-1.5 text-success">
+            <Check aria-hidden="true" className="h-4 w-4" />
+            {t("onb.contactValid")}
+          </span>
+        ) : showError ? (
+          <span className="text-danger">{t("onb.contactInvalid")}</span>
+        ) : (
+          <span className="text-text-muted">{t("onb.contactHint")}</span>
+        )}
+      </span>
     </label>
   );
 }

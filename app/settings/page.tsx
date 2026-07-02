@@ -51,7 +51,7 @@ export default function SettingsPage() {
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-extrabold">{t("settings.language")}</h2>
         <div
-          className="flex flex-wrap gap-2"
+          className="flex flex-nowrap w-full gap-2 pb-1"
           role="group"
           aria-label={t("settings.language")}
         >
@@ -61,7 +61,7 @@ export default function SettingsPage() {
               type="button"
               onClick={() => setLanguage(option.value)}
               aria-pressed={language === option.value}
-              className={`min-h-12 rounded-pill px-5 text-base font-bold transition-colors ${
+              className={`flex-1 min-w-0 whitespace-nowrap min-h-12 rounded-pill px-1 text-sm sm:text-base font-bold transition-colors ${
                 language === option.value
                   ? "bg-bee-yellow text-bee-black"
                   : "border border-border bg-surface text-text hover:bg-surface-alt"
@@ -75,14 +75,14 @@ export default function SettingsPage() {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-extrabold">{t("settings.theme")}</h2>
-        <div className="flex flex-wrap gap-2" role="group" aria-label={t("settings.theme")}>
+        <div className="flex flex-nowrap w-full gap-2 pb-1" role="group" aria-label={t("settings.theme")}>
           {(["light", "dark", "system"] as ThemePreference[]).map((option) => (
             <button
               key={option}
               type="button"
               onClick={() => setTheme(option)}
               aria-pressed={theme === option}
-              className={`min-h-12 rounded-pill px-5 text-base font-bold transition-colors ${
+              className={`flex-1 min-w-0 whitespace-nowrap min-h-12 rounded-pill px-1 text-sm sm:text-base font-bold transition-colors ${
                 theme === option
                   ? "bg-bee-yellow text-bee-black"
                   : "border border-border bg-surface text-text hover:bg-surface-alt"
@@ -97,14 +97,14 @@ export default function SettingsPage() {
       {/* Accessibility Font Size Selector */}
       <section className="flex flex-col gap-3">
         <h2 className="text-xl font-extrabold">{t("onb.textSize")}</h2>
-        <div className="flex flex-wrap gap-2" role="group" aria-label={t("onb.textSize")}>
+        <div className="flex flex-nowrap w-full gap-2 pb-1" role="group" aria-label={t("onb.textSize")}>
           {(["normal", "large", "xlarge"] as const).map((option) => (
             <button
               key={option}
               type="button"
               onClick={() => setFontSize(option)}
               aria-pressed={fontSize === option}
-              className={`min-h-12 rounded-pill px-5 text-base font-bold transition-colors ${
+              className={`flex-1 min-w-0 whitespace-nowrap min-h-12 rounded-pill px-1 text-sm sm:text-base font-bold transition-colors ${
                 fontSize === option
                   ? "bg-bee-yellow text-bee-black"
                   : "border border-border bg-surface text-text hover:bg-surface-alt"

@@ -9,7 +9,7 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 import { useSignRecognition } from "@/ml/useSignRecognition";
 
 /**
- * Camera recognition demo — real-time sign recognition.
+ * FSL Camera — real-time sign recognition.
  *
  * Pipeline: getUserMedia video → MediaPipe Hands (live landmark overlay) →
  * 128-D landmark features sampled across a 2s window → TF.js model
@@ -104,9 +104,6 @@ export default function CameraPage() {
         <h1 className="text-3xl font-black tracking-tight">
           {t("camera.title")}
         </h1>
-        <p className="mt-2 text-sm font-semibold text-warn">
-          {t("camera.prototypeNote")}
-        </p>
       </header>
 
       {isLoadingModel && (

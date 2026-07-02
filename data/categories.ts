@@ -23,7 +23,7 @@ export const categories: Category[] = [
   {
     id: "emergency",
     label: "Emergency",
-    labelFil: "Emerhensiya",
+    labelFil: "Help",
     icon: Siren,
     description: "Urgent help and safety",
     descriptionFil: "Agarang tulong at kaligtasan",

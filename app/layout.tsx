@@ -7,13 +7,21 @@ import { AppGate } from "@/components/AppGate";
 import { AppHeader } from "@/components/AppHeader";
 import { BottomNav } from "@/components/BottomNav";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
-import { DevServiceWorkerCleanup } from "@/components/DevServiceWorkerCleanup";
+// import { DevServiceWorkerCleanup } from "@/components/DevServiceWorkerCleanup";
 
 export const metadata: Metadata = {
   title: "Kumpas — FSL Communicator",
   description:
     "An offline-first Filipino Sign Language communication assistant for public-service and emergency situations.",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icon-192x192.png", sizes: "192x192" }],
+  },
   appleWebApp: {
     capable: true,
     title: "Kumpas",
@@ -36,9 +44,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        {process.env.NODE_ENV === "development" ? (
+        {/* process.env.NODE_ENV === "development" ? (
           <DevServiceWorkerCleanup />
-        ) : null}
+        ) : null */}
         <ThemeProvider>
           <FontSizeProvider>
             <LanguageProvider>

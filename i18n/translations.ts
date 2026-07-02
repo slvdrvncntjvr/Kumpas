@@ -71,16 +71,18 @@ const en: Dict = {
   "home.title": "Essential communication, within reach.",
   "home.emergency": "Emergency",
   "home.phraseCategories": "Phrase categories",
+  "home.recentlyUsed": "Recently used",
   "home.moreTools": "More tools",
   "home.hearingMode": "Hearing person mode",
-  "home.cameraDemo": "Camera recognition demo",
+  "home.cameraDemo": "FSL Camera",
 
   // Library
   "library.title": "Phrase library",
   "library.search": "Search phrases",
-  "library.all": "All",
+  "library.all": "Show all",
   "library.noResults": "No phrases match your search.",
   "library.filterAria": "Filter by category",
+  "library.category": "Category",
   "library.loading": "Loading phrases…",
   "library.urgent": "Urgent",
 
@@ -123,7 +125,6 @@ const en: Dict = {
 
   // Camera
   "camera.title": "Sign Language Recognition",
-  "camera.prototypeNote": "Prototype only — not real-time translation.",
   "camera.start": "Start camera",
   "camera.stop": "Stop camera",
   "camera.detectedSign": "Detected sign",
@@ -192,11 +193,11 @@ const fil: Dict = {
   "common.loading": "Naglo-load…",
 
   // Navigation
-  "nav.home": "Home",
+  "nav.home": "Umpisa",
   "nav.library": "Aklatan",
-  "nav.emergency": "Emerhensiya",
-  "nav.hearing": "Nakakarinig",
-  "nav.camera": "Kamera",
+  "nav.emergency": "Tulong",
+  "nav.hearing": "Pang-nakakarinig",
+  "nav.camera": "Camera",
 
   // Status
   "status.online": "Online",
@@ -238,18 +239,20 @@ const fil: Dict = {
   // Home
   "home.eyebrow": "Offline-first na FSL communicator",
   "home.title": "Mahalagang komunikasyon, abot-kamay.",
-  "home.emergency": "Emerhensiya",
+  "home.emergency": "Tulong",
   "home.phraseCategories": "Mga kategorya ng parirala",
+  "home.recentlyUsed": "Kakagamit Lang",
   "home.moreTools": "Iba pang kagamitan",
-  "home.hearingMode": "Mode para sa nakakarinig",
-  "home.cameraDemo": "Demo ng pagkilala sa kamera",
+  "home.hearingMode": "Pang-nakaririnig",
+  "home.cameraDemo": "FSL Camera",
 
   // Library
   "library.title": "Aklatan ng parirala",
   "library.search": "Maghanap ng parirala",
-  "library.all": "Lahat",
+  "library.all": "Ipakita lahat",
   "library.noResults": "Walang pariralang tumugma sa iyong paghahanap.",
   "library.filterAria": "Salain ayon sa kategorya",
+  "library.category": "Kategorya",
   "library.loading": "Naglo-load ng mga parirala…",
   "library.urgent": "Agaran",
 
@@ -260,7 +263,7 @@ const fil: Dict = {
   "comm.signAlt": "Pagpapakita ng sign language para sa: ",
 
   // Hearing mode
-  "hearing.title": "Mode para sa nakakarinig",
+  "hearing.title": "Pang-nakaririnig",
   "hearing.subtitle":
     "Mag-type ng mensahe para sa Bingi. Pasisimplehin ito sa mas malinaw na teksto.",
   "hearing.yourMessage": "Iyong mensahe",
@@ -273,7 +276,7 @@ const fil: Dict = {
   "hearing.suggested": "Mga iminumungkahing parirala",
 
   // Emergency
-  "emergency.title": "Emerhensiya",
+  "emergency.title": "Tulong",
   "emergency.message":
     "Bingi ako. Kailangan ko ng tulong. Pakitawagan ang aking emergency contact.",
   "emergency.speakMessage": "Sabihin ang mensahe ng emerhensiya",
@@ -291,8 +294,7 @@ const fil: Dict = {
   "emergency.saveProfile": "I-save ang profile",
 
   // Camera
-  "camera.title": "Pagkilala ng Sign Language",
-  "camera.prototypeNote": "Prototype lang — hindi real-time na pagsasalin.",
+  "camera.title": "Kumpas Mode",
   "camera.start": "Simulan ang kamera",
   "camera.stop": "Itigil ang kamera",
   "camera.detectedSign": "Natukoy na senyas",

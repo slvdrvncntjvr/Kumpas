@@ -26,9 +26,6 @@ export default function HomePage() {
   return (
     <div className="flex flex-col gap-8 page-enter">
       <section aria-labelledby="home-title">
-        <p className="mb-2 text-sm font-bold uppercase tracking-[0.16em] text-text-muted">
-          {t("home.eyebrow")}
-        </p>
         <h1
           id="home-title"
           className="max-w-2xl text-4xl font-black leading-[1.0] tracking-tight sm:text-5xl"
@@ -40,7 +37,7 @@ export default function HomePage() {
       {/* Large primary emergency action */}
       <Link
         href="/emergency"
-        className="flex min-h-20 w-full items-center justify-center gap-3 rounded-card bg-danger px-6 text-center text-2xl font-black text-white shadow-[var(--shadow)] transition-colors hover:brightness-110"
+        className="flex min-h-20 w-full items-center justify-center gap-2 sm:gap-3 rounded-card bg-danger px-4 sm:px-6 text-center text-xl sm:text-2xl font-black text-white shadow-[var(--shadow)] transition-colors hover:brightness-110"
       >
         <Siren aria-hidden="true" className="h-8 w-8" />
         {t("home.emergency")}
@@ -54,14 +51,14 @@ export default function HomePage() {
             className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-[0.12em] text-text-muted"
           >
             <Clock aria-hidden="true" className="h-4 w-4" />
-            Recently used
+            {t("home.recentlyUsed")}
           </h2>
-          <div className="flex flex-wrap gap-2">
+          <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 pb-2 sm:-mx-8 sm:px-8">
             {recents.map((phrase) => (
               <Link
                 key={phrase.id}
                 href={`/communication/${phrase.id}`}
-                className="flex items-center gap-2 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-bold shadow-[var(--shadow)] transition-colors hover:bg-surface-alt hover:-translate-y-0.5 active:translate-y-0"
+                className="shrink-0 whitespace-nowrap rounded-pill border border-border bg-surface px-4 py-2 text-sm font-bold shadow-[var(--shadow)] transition-colors hover:bg-surface-alt hover:-translate-y-0.5 active:translate-y-0"
               >
                 {language === "fil" ? phrase.titleFil : phrase.title}
               </Link>
@@ -75,7 +72,7 @@ export default function HomePage() {
         <h2 id="cat-title" className="mb-3 text-xl font-extrabold">
           {t("home.phraseCategories")}
         </h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-3">
           {categories.map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}
@@ -87,19 +84,19 @@ export default function HomePage() {
         <h2 id="modes-title" className="mb-3 text-xl font-extrabold">
           {t("home.moreTools")}
         </h2>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-2 sm:gap-3 sm:grid-cols-2">
           <Link
             href="/hearing"
-            className="flex min-h-16 items-center gap-3 rounded-card border border-border bg-surface px-5 text-lg font-bold shadow-[var(--shadow)] transition-transform hover:-translate-y-0.5"
+            className="flex min-h-16 items-center gap-3 rounded-card border border-border bg-surface px-4 sm:px-5 text-base sm:text-lg text-balance font-bold shadow-[var(--shadow)] transition-transform hover:-translate-y-0.5"
           >
-            <MessageSquare aria-hidden="true" className="h-6 w-6 text-bee-amber" />
+            <MessageSquare aria-hidden="true" className="h-6 w-6 shrink-0 text-bee-amber" />
             {t("home.hearingMode")}
           </Link>
           <Link
             href="/camera"
-            className="flex min-h-16 items-center gap-3 rounded-card border border-border bg-surface px-5 text-lg font-bold shadow-[var(--shadow)] transition-transform hover:-translate-y-0.5"
+            className="flex min-h-16 items-center gap-3 rounded-card border border-border bg-surface px-4 sm:px-5 text-base sm:text-lg text-balance font-bold shadow-[var(--shadow)] transition-transform hover:-translate-y-0.5"
           >
-            <Camera aria-hidden="true" className="h-6 w-6 text-bee-amber" />
+            <Camera aria-hidden="true" className="h-6 w-6 shrink-0 text-bee-amber" />
             {t("home.cameraDemo")}
           </Link>
         </div>

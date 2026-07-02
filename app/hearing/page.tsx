@@ -74,6 +74,7 @@ export default function HearingPage() {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           rows={4}
+          maxLength={500}
           placeholder={t("hearing.placeholder")}
           className="rounded-card border border-border bg-surface p-4 text-lg shadow-[var(--shadow)]"
         />
@@ -124,6 +125,11 @@ export default function HearingPage() {
               )}
             </div>
             <p className="text-2xl font-bold leading-snug">{simplified}</p>
+          </div>
+
+          {/* FSL visual placeholder for the simplified output */}
+          <div className="hex-pattern flex h-20 items-center justify-center rounded-card border border-dashed border-border text-sm font-semibold text-text-muted">
+            {t("comm.fslPlaceholder")}
           </div>
 
           <SpeakButton text={simplified} label={t("hearing.speakSimplified")} />

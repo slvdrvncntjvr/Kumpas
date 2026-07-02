@@ -36,8 +36,8 @@ export function PhraseCard({ phrase }: { phrase: Phrase }) {
         href={`/communication/${phrase.id}`}
         className="min-w-0 flex-1 p-4"
       >
-        <span className="block truncate text-lg font-bold">{title}</span>
-        <span className="block truncate text-sm text-text-muted">{text}</span>
+        <span className="block text-lg font-bold">{title}</span>
+        <span className="block truncate text-sm text-text-muted mt-0.5">{text}</span>
       </Link>
 
       <div className="flex flex-shrink-0 items-center gap-2 pr-3">

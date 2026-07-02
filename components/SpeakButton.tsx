@@ -58,14 +58,14 @@ export function SpeakButton({ text, label, className = "" }: SpeakButtonProps) {
       onClick={handleClick}
       aria-live="polite"
       aria-label={speaking ? t("common.stop") : (label ?? t("common.speak"))}
-      className={`flex min-h-12 items-center justify-center gap-2 rounded-button bg-bee-yellow px-6 text-lg font-black text-bee-black transition-colors hover:bg-bee-yellow-bright active:bg-bee-amber ${className}`}
+      className={`flex min-h-12 w-full max-w-full items-center justify-center gap-2 rounded-button bg-bee-yellow px-4 text-[13px] min-[360px]:text-sm sm:text-base md:text-lg font-black text-bee-black transition-colors hover:bg-bee-yellow-bright active:bg-bee-amber ${className}`}
     >
       {speaking ? (
-        <Square aria-hidden="true" className="h-5 w-5" />
+        <Square aria-hidden="true" className="h-5 w-5 shrink-0" />
       ) : (
-        <Volume2 aria-hidden="true" className="h-5 w-5" />
+        <Volume2 aria-hidden="true" className="h-5 w-5 shrink-0" />
       )}
-      {speaking ? t("common.stop") : (label ?? t("common.speak"))}
+      <span className="truncate">{speaking ? t("common.stop") : (label ?? t("common.speak"))}</span>
     </button>
   );
 }

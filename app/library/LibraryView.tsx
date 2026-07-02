@@ -31,7 +31,7 @@ export function LibraryView() {
 
   const visible = useMemo(() => {
     const term = query.trim().toLowerCase();
-    return phrases.filter((phrase) => {
+    const filtered = phrases.filter((phrase) => {
       if (activeFilter === "favourites") {
         if (!favouriteIds.includes(phrase.id)) return false;
       } else if (activeFilter !== "all") {
@@ -44,6 +44,12 @@ export function LibraryView() {
         phrase.titleFil.toLowerCase().includes(term) ||
         phrase.textFil.toLowerCase().includes(term)
       );
+    });
+
+    return filtered.sort((a, b) => {
+      if (a.priority === "urgent" && b.priority !== "urgent") return -1;
+      if (a.priority !== "urgent" && b.priority === "urgent") return 1;
+      return 0;
     });
   }, [activeFilter, query, favouriteIds]);
 
@@ -62,34 +68,32 @@ export function LibraryView() {
         className="min-h-12 rounded-button border border-border bg-surface px-4 text-base shadow-[var(--shadow)]"
       />
 
-      {/* Horizontal scrollable category filter — no-scrollbar hides the track */}
-      <div
-        className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 sm:-mx-8 sm:px-8"
-        role="group"
-        aria-label={t("library.filterAria")}
-      >
-        <Chip active={activeFilter === "all"} onClick={() => setActiveFilter("all")}>
-          {t("library.all")}
-        </Chip>
-
-        {/* Starred / favourites chip */}
-        <Chip
-          active={activeFilter === "favourites"}
-          onClick={() => setActiveFilter("favourites")}
-          icon={<Star className="h-3.5 w-3.5" aria-hidden="true" />}
-        >
-          Starred
-        </Chip>
-
-        {categories.map((category) => (
-          <Chip
-            key={category.id}
-            active={activeFilter === category.id}
-            onClick={() => setActiveFilter(category.id)}
+      <div className="flex flex-col gap-2">
+        <span className="text-sm font-bold uppercase tracking-wider text-text-muted">
+          {t("library.category")}
+        </span>
+        <div className="relative">
+          <select
+            value={activeFilter}
+            onChange={(e) => setActiveFilter(e.target.value as FilterMode)}
+            aria-label={t("library.filterAria")}
+            className="min-h-12 w-full appearance-none rounded-button border border-border bg-surface px-4 pr-10 text-base font-bold shadow-[var(--shadow)] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-bee-yellow-bright"
           >
-            {language === "fil" ? category.labelFil : category.label}
-          </Chip>
-        ))}
+          <option value="all">{t("library.all")}</option>
+          <option value="favourites">Starred</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {language === "fil" ? category.labelFil : category.label}
+            </option>
+          ))}
+        </select>
+        {/* Dropdown arrow icon */}
+        <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+          <svg className="h-5 w-5 text-text-muted" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+          </svg>
+        </div>
+        </div>
       </div>
 
       {visible.length > 0 ? (
@@ -111,33 +115,7 @@ export function LibraryView() {
   );
 }
 
-function Chip({
-  active,
-  onClick,
-  children,
-  icon,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-  icon?: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`flex flex-shrink-0 items-center gap-1.5 rounded-pill px-4 py-2 text-sm font-bold transition-colors ${
-        active
-          ? "bg-bee-yellow text-bee-black"
-          : "border border-border bg-surface text-text hover:bg-surface-alt"
-      }`}
-    >
-      {icon}
-      {children}
-    </button>
-  );
-}
+
 
 function isCategory(value: string | null): value is PhraseCategory {
   return (
