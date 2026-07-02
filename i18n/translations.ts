@@ -73,7 +73,7 @@ const en: Dict = {
   "home.phraseCategories": "Phrase categories",
   "home.moreTools": "More tools",
   "home.hearingMode": "Hearing person mode",
-  "home.cameraDemo": "Camera recognition demo",
+  "home.cameraDemo": "FSL Camera",
 
   // Library
   "library.title": "Phrase library",
@@ -123,7 +123,6 @@ const en: Dict = {
 
   // Camera
   "camera.title": "Sign Language Recognition",
-  "camera.prototypeNote": "Prototype only — not real-time translation.",
   "camera.start": "Start camera",
   "camera.stop": "Stop camera",
   "camera.detectedSign": "Detected sign",
@@ -242,7 +241,7 @@ const fil: Dict = {
   "home.phraseCategories": "Mga kategorya ng parirala",
   "home.moreTools": "Iba pang kagamitan",
   "home.hearingMode": "Pang-nakaririnig",
-  "home.cameraDemo": "Kumpas Mode",
+  "home.cameraDemo": "FSL Camera",
 
   // Library
   "library.title": "Aklatan ng parirala",
@@ -292,7 +291,6 @@ const fil: Dict = {
 
   // Camera
   "camera.title": "Kumpas Mode",
-  "camera.prototypeNote": "Prototype lang — hindi real-time na pagsasalin.",
   "camera.start": "Simulan ang kamera",
   "camera.stop": "Itigil ang kamera",
   "camera.detectedSign": "Natukoy na senyas",

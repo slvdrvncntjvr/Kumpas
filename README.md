@@ -56,7 +56,7 @@ no internet required for essential communication.
   and medical info; one-tap speak
 - **Hearing Person Mode** — staff types a message; Gemini (online) or local
   rule-based simplifier makes it accessible; suggested phrase cards
-- **Camera recognition demo** — real-time FSL recognition via MediaPipe →
+- **FSL Camera** — real-time FSL recognition via MediaPipe →
   custom TensorFlow.js model
 - **Bilingual UI** — English and Filipino toggle in Settings
 - **Dark / light / system themes** — yellow-black bee palette, WCAG AA contrast
